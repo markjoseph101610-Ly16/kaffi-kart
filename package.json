@@ -1,0 +1,20 @@
+{
+  "name": "hello-kaffi-system",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Hello Kaffi - customer site + POS/admin + API in one Vercel project",
+  "main": "api/index.js",
+  "scripts": {
+    "start": "node api/index.js",
+    "migrate": "node scripts/migrate-from-old.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.0",
+    "express": "^4.19.2",
+    "firebase-admin": "^12.1.0",
+    "nodemailer": "^10.0.16"
+  }
+}
