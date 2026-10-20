@@ -11,14 +11,15 @@ import {
   signOut
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
 
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyDmirVWGISgdwg2hL-BkKFa5H29ojbDjiQ",
-  authDomain: "hello-kaffi-hybrid-d68e1.firebaseapp.com",
-  projectId: "hello-kaffi-hybrid-d68e1",
-  storageBucket: "hello-kaffi-hybrid-d68e1.firebasestorage.app",
-  messagingSenderId: "13465566905",
-  appId: "1:13465566905:web:f2deaf06c451b32704a568",
-  measurementId: "G-M9GM5TMRKK"
+  apiKey: "AIzaSyBGcDVhzBzfiIKIrEiyc31YAg28i5YBpqs",
+  authDomain: "hello-kaffi-hybrid.firebaseapp.com",
+  projectId: "hello-kaffi-hybrid",
+  storageBucket: "hello-kaffi-hybrid.firebasestorage.app",
+  messagingSenderId: "966898943973",
+  appId: "1:966898943973:web:4f728721d48e0cdc9f910c",
+  measurementId: "G-BG6JNX50EJ"
 };
 
 const app = initializeApp(firebaseConfig);
