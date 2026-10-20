@@ -336,7 +336,7 @@ app.post('/api/auth/google', async (req, res) => {
     // google:true + confirmed:false -> the shop page opens the "confirm your details" window before ordering is allowed.
     const user = { role: 'customer', google: true, confirmed: false, name: pr.name || d.name || d.email.split('@')[0], email, phone: pr.phone || '', address: pr.address || '', hasProfile: !!pr.name };
     res.json({ token: newSession(user), user });
-  } catch (e) { res.status(401).json({ error: 'Invalid Google sign-in' }); }
+  } catch (e) { console.error('Google verify failed:', e.code || '', e.message); res.status(401).json({ error: 'Invalid Google sign-in' }); }
 });
 // Real-name check: first + last name, letters only (rejects things like "acount123").
 const realName = n => { const w = n.split(/\s+/); return n.length >= 4 && n.length <= 60 && w.length >= 2 && w.every(x => /^\p{L}[\p{L}.'’-]*$/u.test(x)) && w.some(x => x.replace(/[^\p{L}]/gu, '').length >= 2); };

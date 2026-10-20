@@ -1,9 +1,1 @@
-{
-  "framework": null,
-  "outputDirectory": "public",
-  "rewrites": [{ "source": "/api/(.*)", "destination": "/api" }],
-  "functions": { "api/index.js": { "maxDuration": 30 } },
-  "headers": [
-    { "source": "/(.*)", "headers": [{ "key": "Cross-Origin-Opener-Policy", "value": "same-origin-allow-popups" }] }
-  ]
-}
+ { "framework": null, "outputDirectory": "public", "rewrites": [ { "source": "/api/(.*)", "destination": "https://kaffi-kart.onrender.com/api/$1" } ], "headers": [ { "source": "/(.*)", "headers": [{ "key": "Cross-Origin-Opener-Policy", "value": "same-origin-allow-popups" }] } ] }
