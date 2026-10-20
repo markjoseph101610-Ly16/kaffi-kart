@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="icon" type="image/png" href="/hello-kitty.png">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hello Kaffi · Choose your portal</title><link rel="stylesheet" href="style.css">
+</head>
+<body data-page="cashier-home">
+<header class="bar"><h2>Hello Kaffi · Cashier</h2><span id="live" class="pill">Connecting…</span><span class="grow"></span><span id="who"></span><button id="logout" class="btn ghost sm">Sign out</button></header>
+<main class="portal">
+  <div class="phead">
+    <img src="/hello-kitty.png" alt="" width="84" height="84">
+    <h1>Where are you working today?</h1>
+    <p class="muted">Pick a portal to start your shift. You can switch any time.</p>
+  </div>
+  <div class="pcards">
+    <a class="pcard online" href="cashier.html?mode=online">
+      <span class="pbow" aria-hidden="true"></span>
+      <span class="picon" aria-hidden="true">🛵</span>
+      <h2>Online orders</h2>
+      <p>Website orders for delivery and pick-up. Check GCash proofs, receive COD orders and send out riders.</p>
+      <span class="pcount"><b id="cntOnline">–</b> active</span>
+      <span class="pgo">Open online portal</span>
+    </a>
+    <a class="pcard walkin" href="cashier.html?mode=walkin">
+      <span class="pbow" aria-hidden="true"></span>
+      <span class="picon" aria-hidden="true">🛍</span>
+      <h2>Walk-in / POS</h2>
+      <p>Ring up customers at the counter. Dine-in or take-out, cash or GCash, senior discount, then send to the kitchen.</p>
+      <span class="pcount"><b id="cntWalkin">–</b> active</span>
+      <span class="pgo">Open walk-in portal</span>
+    </a>
+  </div>
+</main>
+<div id="toast" class="toast" role="status"></div>
+<script src="../realtime.js"></script><script src="script.js"></script></body></html>

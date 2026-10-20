@@ -348,3 +348,74 @@ td .itemlist{min-width:200px;max-width:360px}
 .gcashbox .glinks{display:flex;gap:12px;flex-wrap:wrap}
 .gcashbox .link,.gcashbox a.link{background:none;border:0;padding:2px 0;color:var(--rose-d);font-weight:700;font-size:13px;text-decoration:underline;cursor:pointer;min-height:0}
 .gcashbox input{margin:0 0 4px}.gcashbox .gnote{font-size:12px}
+/* =====================================================================
+   HELLO KITTY THEME v2 — cashier portals + admin sidebar
+   ===================================================================== */
+:root{--bow:#e5254f;--bow-d:#c81e44;--bow-img:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 40'%3E%3Cpath d='M32 20 8 4q-5 16 0 32z M32 20 56 4q5 16 0 32z' fill='%23e5254f'/%3E%3Ccircle cx='32' cy='20' r='7' fill='%23c81e44'/%3E%3C/svg%3E")}
+
+/* ---------- Cashier: portal chooser ---------- */
+body[data-page=cashier-home]{min-height:100dvh;display:flex;flex-direction:column;background:radial-gradient(circle at 12% 8%,#ffe1ec,transparent 45%),radial-gradient(circle at 92% 92%,#fff0d9,transparent 40%),var(--cream)}
+body[data-page=cashier-home] .bar{position:static}
+.portal{flex:1;display:grid;align-content:center;justify-items:center;gap:28px;padding:clamp(16px,4vw,40px)}
+.phead{text-align:center;display:grid;justify-items:center;gap:4px}
+.phead img{width:84px;height:auto;filter:drop-shadow(0 6px 10px #f0458a33)}
+.phead h1{margin:6px 0 0;font-size:clamp(26px,4vw,38px);color:var(--rose-d)}
+.pcards{width:min(920px,100%);display:grid;grid-template-columns:1fr 1fr;gap:clamp(14px,2.5vw,28px)}
+.pcard{--k:var(--rose);position:relative;display:grid;gap:10px;align-content:start;padding:clamp(20px,3vw,32px);background:#fff;border:2px solid var(--line);border-top:8px solid var(--k);border-radius:28px;text-decoration:none;color:var(--cocoa);box-shadow:0 10px 30px #f0458a1a;transition:transform .15s,box-shadow .15s,border-color .15s;min-height:300px}
+.pcard.walkin{--k:#4f9a62}
+.pcard:hover,.pcard:focus-visible{transform:translateY(-4px);box-shadow:0 16px 38px #f0458a33;border-color:var(--k)}
+.pcard h2{margin:0;font-size:clamp(22px,3vw,28px);color:var(--k)}
+.pcard p{margin:0;color:var(--soft);max-width:36ch}
+.picon{width:72px;height:72px;border-radius:22px;display:grid;place-items:center;font-size:36px;background:color-mix(in srgb,var(--k) 13%,#fff)}
+.pbow{position:absolute;top:14px;right:16px;width:58px;height:36px;background:var(--bow-img) center/contain no-repeat;transform:rotate(12deg)}
+.pcount{display:inline-flex;align-items:baseline;gap:6px;width:fit-content;background:var(--cream);border:2px solid var(--line);border-radius:999px;padding:4px 14px;color:var(--soft);font-size:14px}
+.pcount b{font-size:22px;color:var(--k)}.pcount b.hot{color:var(--bow)}
+.pgo{margin-top:auto;display:block;text-align:center;background:var(--k);color:#fff;font-weight:700;border-radius:16px;padding:14px}
+@media(max-width:720px){.pcards{grid-template-columns:1fr}.pcard{min-height:0}}
+
+/* ---------- Cashier: inside a portal ---------- */
+.pill.mode{background:var(--bow);border-color:var(--bow);color:#fff;font-weight:700}
+#switchPortal{text-decoration:none;display:inline-flex;align-items:center}
+body[data-mode=online] .pos{grid-template-columns:1fr}
+body[data-mode=online] .p-menu,body[data-mode=online] .p-sale,body[data-mode=online] #paneNav{display:none!important}
+body[data-mode=online] .p-orders{display:flex!important;grid-column:1/-1}
+body[data-mode=online] .board{grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+body[data-mode=online] .col{background:var(--cream);border:2px solid var(--line);border-radius:18px;padding:6px 12px 4px;align-self:start}
+body[data-mode=online] .col h4{background:transparent}
+body[data-mode=online] .col>p.muted{background:#fff}
+body[data-mode=walkin] #riderBar{display:none!important}
+body[data-mode=online] .p-orders>h3,body[data-mode=walkin] .p-orders>h3{display:flex;align-items:center;gap:10px}
+.p-orders>h3::before{content:"";width:34px;height:22px;background:var(--bow-img) center/contain no-repeat}
+
+/* ---------- Admin: sidebar shell (each view fits the screen) ---------- */
+body[data-page=admin]{display:grid;grid-template-columns:264px minmax(0,1fr);height:100vh;height:100dvh;overflow:hidden}
+.side{display:flex;flex-direction:column;gap:18px;padding:20px 14px 14px;background:linear-gradient(180deg,#ffe3ee 0,#fff1f5 55%,var(--cream) 100%);border-right:2px solid var(--line);min-height:0}
+.brand{display:flex;align-items:center;gap:12px;padding:4px 8px 14px;border-bottom:2px dashed #f6bcd2}
+.brand img{border-radius:50%;background:#fff;border:2px solid var(--line);padding:2px}
+.brand b{display:block;font:700 21px/1.1 Georgia,"Fraunces",serif;color:var(--rose-d)}
+.brand span{display:inline-block;margin-top:4px;background:var(--bow);color:#fff;font-size:12px;font-weight:700;border-radius:999px;padding:1px 12px}
+.snav{display:grid;gap:6px;align-content:start;flex:1;overflow-y:auto}
+.snav a{position:relative;display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:16px;color:var(--cocoa);text-decoration:none;font-weight:700;border:2px solid transparent;transition:background .15s,border-color .15s}
+.snav a i{font-style:normal;width:36px;height:36px;border-radius:12px;display:grid;place-items:center;background:#fff;font-size:18px;box-shadow:0 2px 6px #f0458a1f}
+.snav a:hover{background:#fff;border-color:var(--line)}
+.snav a.on{background:#fff;border-color:var(--rose);color:var(--rose-d);box-shadow:0 6px 16px #f0458a26}
+.snav a.on::after{content:"";position:absolute;right:10px;top:50%;width:30px;height:19px;transform:translateY(-50%) rotate(8deg);background:var(--bow-img) center/contain no-repeat}
+.sidefoot{display:grid;gap:8px;padding:12px;background:#fff;border:2px solid var(--line);border-radius:18px;text-align:center}
+.sidefoot #who{font-weight:700;color:var(--cocoa);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mainwrap{display:flex;flex-direction:column;min-width:0;min-height:0;height:100vh;height:100dvh}
+body[data-page=admin] .mainwrap .bar{position:static;flex:none;flex-wrap:nowrap;padding:12px clamp(14px,3vw,28px)}
+body[data-page=admin] .bar h2{font-size:24px}
+.burger{display:none;border:2px solid var(--line);background:#fff;border-radius:12px;width:44px;height:44px;font-size:20px;color:var(--rose-d)}
+body[data-page=admin] .mainwrap .admin{flex:1;min-height:0;overflow-y:auto;max-width:none;width:100%;margin:0;align-content:start}
+.view{display:grid;gap:clamp(14px,2vw,20px);align-content:start;width:100%;max-width:1240px;margin:0 auto}
+.hourly .bars.v{height:200px;gap:6px}
+.hourly .bar-col{max-width:64px}.hourly .bar-val{font-size:12px}
+.hourly #chartHourly .bar-fill,#chartHourly .bar-fill{background:linear-gradient(#ff7fb0,var(--rose))!important;border-radius:8px 8px 0 0}
+.scrim{display:none}
+@media(max-width:900px){
+  body[data-page=admin]{grid-template-columns:1fr}
+  .side{position:fixed;inset:0 auto 0 0;width:min(280px,84vw);z-index:30;transform:translateX(-105%);transition:transform .25s;box-shadow:8px 0 30px #5a3e3a33}
+  body.nav-open .side{transform:none}
+  body.nav-open .scrim{display:block;position:fixed;inset:0;z-index:25;background:#3d2b2e66}
+  .burger{display:inline-grid;place-items:center}
+}

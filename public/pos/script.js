@@ -72,13 +72,35 @@ if (page === 'login') {
     try {
       const role = document.body.dataset.role;
       const s = await api('/auth/staff', { method: 'POST', body: { username: $('#username').value.trim(), password: $('#password').value, role } });
-      sessionStorage.setItem('hk_staff', JSON.stringify(s)); location.href = role === 'admin' ? 'admin.html' : 'cashier.html';
+      sessionStorage.setItem('hk_staff', JSON.stringify(s)); location.href = role === 'admin' ? 'admin.html' : 'cashier-home.html';
     } catch (er) { $('#err').textContent = er.message; }
   };
 }
 
+/* ===== CASHIER PORTAL CHOOSER (Online / Walk-in) ===== */
+if (page === 'cashier-home' && guard('cashier')) {
+  const active = o => !['Completed', 'Cancelled'].includes(o.status);
+  const paint = () => {
+    const on = orders.filter(o => active(o) && o.source === 'Online').length, pos = orders.filter(o => active(o) && o.source === 'POS').length;
+    $('#cntOnline').textContent = on; $('#cntWalkin').textContent = pos;
+    $('#cntOnline').classList.toggle('hot', on > 0);
+  };
+  (async () => {
+    try { orders = await api('/orders'); } catch (e) { return $('#logout').click(); }
+    paint();
+    connect(m => { if (m.type === 'order') { upsert(m.order); paint(); if (m.isNew && m.order.source === 'Online') { beep(); toast(`New online order #${m.order.id}`); } } });
+  })();
+}
+
 /* ===== CASHIER ===== */
 if (page === 'cashier' && guard('cashier')) {
+  /* portal: ?mode=online (website orders) or ?mode=walkin (counter POS); anything else goes back to the chooser */
+  const mode = new URLSearchParams(location.search).get('mode');
+  if (mode !== 'online' && mode !== 'walkin') { location.replace('cashier-home.html'); }
+  document.body.dataset.mode = mode;
+  const inMode = o => (mode === 'online' ? o.source === 'Online' : o.source === 'POS');
+  $('#modeTag').textContent = mode === 'online' ? '🛵 Online' : '🛍 Walk-in';
+  $('#ordTitle').textContent = mode === 'online' ? 'Online orders' : 'Walk-in orders';
   let cat = CATS[0], cart = {}, q = '';
 
   /* --- stock reminder popup (low / last one / not enough stock) --- */
@@ -123,7 +145,7 @@ if (page === 'cashier' && guard('cashier')) {
     });
   }
   $('#paneNav').querySelectorAll('button').forEach(b => b.onclick = () => setPane(b.dataset.pane === 'sell' ? 'menu' : b.dataset.pane));
-  setPane('menu');
+  setPane(mode === 'online' ? 'orders' : 'menu');
 
   /* --- search: every word must match name or category; searches ALL categories --- */
   const matches = m => { const hay = (m.name + ' ' + m.category).toLowerCase(); return q.split(/\s+/).every(w => hay.includes(w)); };
@@ -228,12 +250,13 @@ if (page === 'cashier' && guard('cashier')) {
   $('#gCopy').onclick = async e => { const b = e.currentTarget; try { await navigator.clipboard.writeText(POS_GCASH.number.replace(/\s/g, '')); b.textContent = 'Copied!'; } catch (_) { b.textContent = 'Copy failed'; } setTimeout(() => (b.textContent = 'Copy number'), 1500); };
 
   function renderBoard() {
-    const active = orders.filter(o => o.status !== 'Completed').length;
+    const view = orders.filter(inMode);   // this portal only
+    const active = view.filter(o => o.status !== 'Completed').length;
     $('#ordBadge').textContent = active; $('#ordBadge').hidden = !active;
-    const hasDelivery = orders.some(o => o.type === 'delivery');
+    const hasDelivery = view.some(o => o.type === 'delivery');
     const cols = [
       ['Payment check', o => o.status === 'Payment Review'],   // GCash orders wait here until the cashier checks the proof
-      ...(orders.some(isCodHold) ? [['COD to receive', isCodHold]] : []),   // customer can still cancel here
+      ...(view.some(isCodHold) ? [['COD to receive', isCodHold]] : []),   // customer can still cancel here
       ['Preparing', o => o.status === 'Preparing' || (o.status === 'Pending' && !isCodHold(o))],   // Pending is shown as Preparing
       ['Ready', o => o.status === 'Ready' && !o.dispatched],
       ...(hasDelivery ? [['Out for delivery', o => o.status === 'Ready' && o.dispatched]] : [])
@@ -256,7 +279,7 @@ if (page === 'cashier' && guard('cashier')) {
       if (!o.riderId) return { label: 'Waiting for rider', off: true };
       return { label: o.dispatched ? 'Mark Delivered' : 'Out for delivery' };
     };
-    $('#board').innerHTML = cols.map(([name, test]) => `<div class="col ${name.replace(/\s/g, '')}"><h4>${name} (${orders.filter(test).length})</h4>${orders.filter(test).map(o => { const a = action(o); return `
+    $('#board').innerHTML = cols.map(([name, test]) => `<div class="col ${name.replace(/\s/g, '')}"><h4>${name} (${view.filter(test).length})</h4>${view.filter(test).map(o => { const a = action(o); return `
       <div class="ord ${fresh.has(o.id) ? 'fresh' : ''} ${isCodHold(o) ? 'cod' : ''}"><header><span>#${o.id}</span><span class="tag ${o.source === 'POS' ? 'pos' : ''}">${esc(o.source)} · ${esc(o.type)}</span></header>
       <div>${esc(o.customer)}${o.address ? ' · ' + esc(o.address) : ''}</div>
       ${svcTags(o) ? `<div class="svcs">${svcTags(o)}</div>` : ''}
@@ -272,7 +295,7 @@ if (page === 'cashier' && guard('cashier')) {
     });
     $('#board').querySelectorAll('[data-proof]').forEach(b => b.onclick = () => openProof(+b.dataset.proof));
     $('#board').querySelectorAll('[data-assign]').forEach(sel => sel.onchange = async () => {
-      const cur = orders.find(x => x.id == sel.dataset.assign);
+      const cur = view.find(x => x.id == sel.dataset.assign);
       if (cur && cur.dispatched) { toast('Rider is locked: order is already out for delivery'); boardDirty = true; sel.blur(); return; }
       try { await api(`/orders/${sel.dataset.assign}/rider`, { method: 'PATCH', body: { riderId: sel.value ? +sel.value : null } }); }
       catch (e) { toast(e.message); }
@@ -409,6 +432,11 @@ if (page === 'admin' && guard('admin')) {
     try { sales = await api('/sales'); } catch (e) {}
     renderStats(); renderCancelled();
     barChart($('#chartTop'), ((sales && sales.top) || []).map(t => ({ label: t[0], value: t[1] })), true);
+    { const t0 = startOfDay(Date.now()), hrs = {}, now = new Date().getHours();
+      orders.filter(o => o.createdAt >= t0 && o.status !== 'Cancelled').forEach(o => { const h = new Date(o.createdAt).getHours(); hrs[h] = (hrs[h] || 0) + o.total; });
+      const hs = Object.keys(hrs).map(Number), lo = Math.min(8, ...hs), hi = Math.max(20, ...hs), data = [];
+      for (let h = lo; h <= hi; h++) data.push({ label: (h % 12 || 12) + (h < 12 ? 'am' : 'pm'), value: Math.round(hrs[h] || 0), cls: 'c0', today: h === now });
+      barChart($('#chartHourly'), data, false, { empty: 'No sales yet today.' }); }
     barChart($('#chartChannel'), [{ label: 'Online', value: sales ? sales.online : 0 }, { label: 'In-store', value: sales ? sales.pos : 0 }], false);
   }
   /* ---- Long item lists: short orders show a plain list; longer ones collapse to a summary you can expand ---- */

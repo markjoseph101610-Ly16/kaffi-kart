@@ -7,18 +7,36 @@
 <style>#menuEmpty{display:none;text-align:center;padding:18px 0;color:#9a7b84}</style>
 </head>
 <body data-page="admin">
-<header class="bar"><h2>Hello Kaffi · Admin</h2><span id="live" class="pill">Connecting…</span><span class="grow"></span><span id="who"></span><button id="logout" class="btn ghost sm">Sign out</button></header>
+<div class="scrim" id="scrim"></div>
+<aside class="side" id="side" aria-label="Admin navigation">
+  <div class="brand"><img src="/hello-kitty.png" alt="" width="46" height="46"><div><b>Hello Kaffi</b><span>Admin</span></div></div>
+  <nav class="snav" id="snav">
+    <a href="#today" data-v="today"><i>📊</i>Today</a>
+    <a href="#orders" data-v="orders"><i>🧾</i>Orders</a>
+    <a href="#delivery" data-v="delivery"><i>🛵</i>Delivery</a>
+    <a href="#menu" data-v="menu"><i>🍰</i>Menu &amp; stock</a>
+    <a href="#cancelled" data-v="cancelled"><i>🚫</i>Cancelled</a>
+    <a href="#report" data-v="report"><i>📁</i>Sales report</a>
+  </nav>
+  <div class="sidefoot"><span id="who"></span><button id="logout" class="btn ghost sm">Sign out</button></div>
+</aside>
+<div class="mainwrap">
+<header class="bar"><button type="button" id="burger" class="burger" aria-label="Open menu">☰</button><h2 id="viewTitle">Today</h2><span id="live" class="pill">Connecting…</span></header>
 <main class="admin">
-  <section class="stats" id="stats"></section>
+  <div class="view" data-view="today" hidden>
+<section class="stats" id="stats"></section>
 
   <!-- SALES SUMMARY (bar graphs) -->
   <section class="charts">
     <div class="panel"><h3>Top sellers <small class="muted">(units sold today)</small></h3><div id="chartTop" class="bars h"></div></div>
     <div class="panel"><h3>Orders by channel <small class="muted">(today)</small></h3><div id="chartChannel" class="bars v"></div></div>
   </section>
+  <section class="panel hourly"><h3>Sales by hour <small class="muted">(today, in ₱)</small></h3><div id="chartHourly" class="bars v"></div></section>
+</div>
 
   <!-- CANCELLED ORDERS -->
-  <section class="panel cancels">
+  <div class="view" data-view="cancelled" hidden>
+<section class="panel cancels">
     <div class="panel-head">
       <h3>Cancelled orders <small class="muted">(by the day the order was placed)</small></h3>
       <div id="cancelRange" class="seg-tabs" role="group" aria-label="Period">
@@ -31,9 +49,11 @@
       <div><h4>Why they were cancelled</h4><div id="chartCancelWhy" class="bars h"></div></div>
     </div>
   </section>
+</div>
 
   <!-- DELIVERY: riders + assigning (admin only) -->
-  <section class="dispatch">
+  <div class="view" data-view="delivery" hidden>
+<section class="dispatch">
     <div class="panel">
       <div class="panel-head"><h3>Riders</h3><span id="riderSummary" class="muted small"></span></div>
       <div id="riderList" class="riders"></div>
@@ -51,8 +71,10 @@
       <div id="deliveryList" class="deliveries"></div>
     </div>
   </section>
+</div>
 
-  <section class="panel">
+  <div class="view" data-view="menu" hidden>
+<section class="panel">
     <h3 id="formTitle">Add menu item</h3>
     <form id="itemForm" class="itemform">
       <input type="hidden" id="itemId">
@@ -78,9 +100,11 @@
     <div class="scroll tall"><table id="menuTable"></table></div>
     <p id="menuEmpty">No products match your search.</p>
   </section>
+</div>
 
   <!-- SALES REPORT: export to Excel / import back -->
-  <section class="panel report">
+  <div class="view" data-view="report" hidden>
+<section class="panel report">
     <div class="panel-head"><h3>Sales report <small class="muted">Export to the Sales-Report folder &middot; import it back anytime</small></h3></div>
     <div class="reportbar">
       <label>From <input type="date" id="expFrom"></label>
@@ -103,11 +127,30 @@
       </ul>
     </details>
   </section>
+</div>
 
-  <section class="panel"><h3>Recent orders</h3><div class="scroll tall"><table id="orderTable"></table></div></section>
+  <div class="view" data-view="orders" hidden>
+<section class="panel"><h3>Recent orders</h3><div class="scroll tall"><table id="orderTable"></table></div></section>
+</div>
 </main>
+</div>
 <div id="toast" class="toast" role="status"></div>
 <script src="../realtime.js"></script><script src="script.js"></script>
+<script>
+/* Sidebar views: one section at a time, chosen by the link (#today, #orders ...) */
+(function(){
+  var views=[].slice.call(document.querySelectorAll('.view')),links=[].slice.call(document.querySelectorAll('#snav a')),title=document.getElementById('viewTitle');
+  function show(){
+    var v=(location.hash||'#today').slice(1); if(!views.some(function(e){return e.dataset.view===v}))v='today';
+    views.forEach(function(e){e.hidden=e.dataset.view!==v});
+    links.forEach(function(a){var on=a.dataset.v===v;a.classList.toggle('on',on);if(on){a.setAttribute('aria-current','page');title.textContent=a.lastChild.textContent.trim();document.title='Hello Kaffi · Admin · '+a.lastChild.textContent.trim();}else a.removeAttribute('aria-current')});
+    document.body.classList.remove('nav-open'); var m=document.querySelector('main.admin'); if(m)m.scrollTop=0;
+  }
+  window.addEventListener('hashchange',show); show();
+  document.getElementById('burger').onclick=function(){document.body.classList.add('nav-open')};
+  document.getElementById('scrim').onclick=function(){document.body.classList.remove('nav-open')};
+})();
+</script>
 <script>
 /* Product search: filters #menuTable rows; re-applied after every re-render. */
 (function(){

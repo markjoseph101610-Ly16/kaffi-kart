@@ -7,14 +7,14 @@
 </head>
 <body data-page="cashier">
 <header class="bar">
-  <h2>Hello Kaffi · Cashier</h2><span id="live" class="pill">Connecting…</span>
+  <h2>Hello Kaffi · Cashier</h2><span id="live" class="pill">Connecting…</span><span id="modeTag" class="pill mode"></span>
   <nav id="paneNav" class="panenav" aria-label="Screens">
     <button type="button" data-pane="sell" class="t-only">Sell</button>
     <button type="button" data-pane="menu" class="m-only">Menu</button>
     <button type="button" data-pane="sale" class="m-only">Sale <b id="saleBadge" class="badge" hidden></b></button>
     <button type="button" data-pane="orders">Orders <b id="ordBadge" class="badge" hidden></b></button>
   </nav>
-  <span class="grow"></span><span id="who"></span><button id="logout" class="btn ghost sm">Sign out</button>
+  <span class="grow"></span><a id="switchPortal" class="btn ghost sm" href="cashier-home.html">⇄ Switch portal</a><span id="who"></span><button id="logout" class="btn ghost sm">Sign out</button>
 </header>
 
 <div class="pos" id="pos" data-pane="menu">
@@ -76,7 +76,7 @@
 
   <!-- ORDERS BOARD -->
   <section class="panel p-orders">
-    <h3>Orders <small class="muted"></small></h3>
+    <h3 id="ordTitle">Orders</h3>
     <div id="riderBar" class="riderbar" hidden></div>
     <div id="board" class="board"></div>
   </section>
